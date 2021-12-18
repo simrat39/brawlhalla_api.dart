@@ -1,6 +1,7 @@
 library brawlhalla;
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:brawlhalla/models/clan_model.dart';
 import 'package:brawlhalla/models/full_legend_model.dart';
@@ -44,6 +45,28 @@ extension ToParameterRegion on Region {
   }
 }
 
+void _handleError(int code) {
+  switch (code) {
+    case 200:
+      break;
+    case 401:
+      throw HttpException("401: Unauthorized – You Must use HTTPS");
+    case 403:
+      throw HttpException("403: Forbidden – Bad API key or missing API key");
+    case 404:
+      throw HttpException(
+          "404: Not Found – The service or endpoint is not found");
+    case 429:
+      throw HttpException(
+          "429: Too Many Requests – Your API key has hit the rate limit.");
+    case 503:
+      throw HttpException(
+          "503: Service Unavailable – We’re temporarially offline for maintanance. Please try again later.");
+    default:
+      throw HttpException("$code");
+  }
+}
+
 class BrawlhallaAPI {
   final String key;
 
@@ -58,10 +81,13 @@ class BrawlhallaAPI {
     });
 
     return http.get(uri).then(
-          (value) => SearchModel.fromJson(
-            jsonDecode(value.body),
-          ),
+      (value) {
+        _handleError(value.statusCode);
+        return SearchModel.fromJson(
+          jsonDecode(value.body),
         );
+      },
+    );
   }
 
   Future<List<RankingModel>> rankings({
@@ -75,10 +101,13 @@ class BrawlhallaAPI {
     });
 
     return http.get(uri).then(
-          (value) => (jsonDecode(value.body) as List)
-              .map((e) => RankingModel.fromJson(e))
-              .toList(),
-        );
+      (value) {
+        _handleError(value.statusCode);
+        return (jsonDecode(value.body) as List)
+            .map((e) => RankingModel.fromJson(e))
+            .toList();
+      },
+    );
   }
 
   Future<PlayerStatsModel> playerStats({
@@ -88,9 +117,10 @@ class BrawlhallaAPI {
       'api_key': key,
     });
 
-    return http
-        .get(uri)
-        .then((value) => PlayerStatsModel.fromJson(jsonDecode(value.body)));
+    return http.get(uri).then((value) {
+      _handleError(value.statusCode);
+      return PlayerStatsModel.fromJson(jsonDecode(value.body));
+    });
   }
 
   Future<PlayerRankedModel> playerRanked({
@@ -100,9 +130,10 @@ class BrawlhallaAPI {
       'api_key': key,
     });
 
-    return http
-        .get(uri)
-        .then((value) => PlayerRankedModel.fromJson(jsonDecode(value.body)));
+    return http.get(uri).then((value) {
+      _handleError(value.statusCode);
+      return PlayerRankedModel.fromJson(jsonDecode(value.body));
+    });
   }
 
   Future<ClanModel> clan({
@@ -112,9 +143,10 @@ class BrawlhallaAPI {
       'api_key': key,
     });
 
-    return http
-        .get(uri)
-        .then((value) => ClanModel.fromJson(jsonDecode(value.body)));
+    return http.get(uri).then((value) {
+      _handleError(value.statusCode);
+      return ClanModel.fromJson(jsonDecode(value.body));
+    });
   }
 
   Future<List<ShortLegendModel>> allLegends() {
@@ -123,10 +155,13 @@ class BrawlhallaAPI {
     });
 
     return http.get(uri).then(
-          (value) => (jsonDecode(value.body) as List)
-              .map((e) => ShortLegendModel.fromJson(e))
-              .toList(),
-        );
+      (value) {
+        _handleError(value.statusCode);
+        return (jsonDecode(value.body) as List)
+            .map((e) => ShortLegendModel.fromJson(e))
+            .toList();
+      },
+    );
   }
 
   Future<FullLegendModel> legend({
@@ -136,8 +171,9 @@ class BrawlhallaAPI {
       'api_key': key,
     });
 
-    return http
-        .get(uri)
-        .then((value) => FullLegendModel.fromJson(jsonDecode(value.body)));
+    return http.get(uri).then((value) {
+      _handleError(value.statusCode);
+      return FullLegendModel.fromJson(jsonDecode(value.body));
+    });
   }
 }
