@@ -99,10 +99,12 @@ class BrawlhallaAPI {
     required Bracket bracket,
     Region region = Region.all,
     int page = 1,
+    String? name,
   }) {
     final uri = Uri.https(BASE_URL,
         '/rankings/${bracket.toParameter()}/${region.toParameter()}/$page', {
       'api_key': key,
+      'name': name,
     });
 
     return http.get(uri).then(
