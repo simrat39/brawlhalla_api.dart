@@ -74,6 +74,8 @@ class BrawlhallaAPI {
 
   BrawlhallaAPI(this.key);
 
+  /// A Player can be looked up by steam ID. This returns the brawlhalla_id and
+  /// a blank name.
   Future<SearchModel> search(String steamid) {
     final uri = Uri.https(BASE_URL, '/search', {
       'steamid': steamid,
@@ -90,6 +92,9 @@ class BrawlhallaAPI {
     );
   }
 
+  /// This endpoint retreives an array of rankings ordered and paginated 50 at a
+  /// time. URL Parameters are required, else a bad request response is returned.
+  /// The name parameter is optional.
   Future<List<RankingModel>> rankings({
     required Bracket bracket,
     Region region = Region.all,
@@ -110,6 +115,7 @@ class BrawlhallaAPI {
     );
   }
 
+  /// This endpoint retrieves all stats about a player
   Future<PlayerStatsModel> playerStats({
     required int brawlhalla_id,
   }) {
@@ -123,6 +129,7 @@ class BrawlhallaAPI {
     });
   }
 
+  /// This endpoint retrieves ranked data about a player.
   Future<PlayerRankedModel> playerRanked({
     required int brawlhalla_id,
   }) {
@@ -136,6 +143,7 @@ class BrawlhallaAPI {
     });
   }
 
+  /// This endpoint retrieves information about a specific clan and its clan members.
   Future<ClanModel> clan({
     required int clan_id,
   }) {
@@ -149,6 +157,8 @@ class BrawlhallaAPI {
     });
   }
 
+  /// This endpoint retrieves summarized data for all legends. Use the Specific
+  /// Legend endpoint for more details about a legend.
   Future<List<ShortLegendModel>> allLegends() {
     final uri = Uri.https(BASE_URL, '/legend/all/', {
       'api_key': key,
@@ -164,6 +174,7 @@ class BrawlhallaAPI {
     );
   }
 
+  /// This endpoint retrieves information about a specific legend.
   Future<FullLegendModel> legend({
     required int legend_id,
   }) {
